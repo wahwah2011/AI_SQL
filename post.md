@@ -1,7 +1,6 @@
-# Dog Show
+# Music App (Apple Music)
 
-My project models data that someone running a dog show might find useful. Includes contact information about people and relevant information about the dogs.
-
+My project models a database that mimics Apple Music (or any other streaming service's) user/music database. 
 
 
 <img src="schema.png">
