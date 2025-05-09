@@ -8,6 +8,7 @@ My project models a database that mimics Apple Music (or any other streaming ser
 
 ## Query I thought it did well on
 
+
 **Question**: Which song appears in the greatest number of playlists?
 
 **GPT SQL Response**:
@@ -33,8 +34,6 @@ LIMIT 1;
 
 
 ## Question that it tripped up on
-It did the SQL part almost right, but didn't quite get the data back in a friendly way. I wanted to know that we wouldn't be able to text/SMS "Bob Jones" who is person id 2 in my database. It returned an id and then couldn't tell me what I wanted to know.
-
 
 
 Question: Which playlists contain only songs from a single genre?
@@ -56,7 +55,7 @@ HAVING
     COUNT(DISTINCT s.Genre) = 1;
 ```
 
-SQL Result is just "IDs": []
+SQL Result is just "IDs": [ ]
 
 **Friendly response**: I'm sorry, but I can't determine which playlists contain only songs from a single genre based on the information provided.
 
