@@ -1,0 +1,72 @@
+CREATE TABLE User (
+    UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Email VARCHAR(255) UNIQUE NOT NULL,
+    RegistrationTime DATETIME NOT NULL
+);
+
+CREATE TABLE Artist (
+    ArtistID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Country VARCHAR(100),
+    Bio TEXT
+);
+
+CREATE TABLE Album (
+    AlbumID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Title VARCHAR(200) NOT NULL,
+    Genre VARCHAR(100),
+    ReleaseDate DATE,
+    CoverArt VARCHAR(255)
+);
+
+CREATE TABLE Song (
+    SongID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Title VARCHAR(200) NOT NULL,
+    Duration INT, -- Duration in seconds
+    Genre VARCHAR(100),
+    ReleaseDate DATE
+);
+
+CREATE TABLE Playlist (
+    PlaylistID INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserID INT NOT NULL,
+    Title VARCHAR(200) NOT NULL,
+    Description TEXT,
+    DateCreated DATETIME NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+);
+
+CREATE TABLE PlaylistSong (
+    PlaylistID INT NOT NULL,
+    SongID INT NOT NULL,
+    PRIMARY KEY (PlaylistID, SongID),
+    FOREIGN KEY (PlaylistID) REFERENCES Playlist(PlaylistID),
+    FOREIGN KEY (SongID) REFERENCES Song(SongID)
+);
+
+CREATE TABLE SongArtist (
+    SongID INT NOT NULL,
+    ArtistID INT NOT NULL,
+    PRIMARY KEY (SongID, ArtistID),
+    FOREIGN KEY (SongID) REFERENCES Song(SongID),
+    FOREIGN KEY (ArtistID) REFERENCES Artist(ArtistID)
+);
+
+CREATE TABLE AlbumSong (
+    AlbumID INT NOT NULL,
+    SongID INT NOT NULL,
+    PRIMARY KEY (AlbumID, SongID),
+    FOREIGN KEY (AlbumID) REFERENCES Album(AlbumID),
+    FOREIGN KEY (SongID) REFERENCES Song(SongID)
+);
+
+CREATE TABLE UserSongInteraction (
+    InteractionID INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserID INT NOT NULL,
+    SongID INT NOT NULL,
+    ActivityType VARCHAR(50) NOT NULL, 
+    ActivityTime DATETIME NOT NULL,
+    FOREIGN KEY (UserID) REFERENCES User(UserID),
+    FOREIGN KEY (SongID) REFERENCES Song(SongID)
+);
