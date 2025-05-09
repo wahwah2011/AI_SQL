@@ -8,20 +8,26 @@ My project models a database that mimics Apple Music (or any other streaming ser
 
 ## Query I thought it did well on
 
-**Question**: What are the names and cities of the dogs who have awards?
+**Question**: Which song appears in the greatest number of playlists?
 
 **GPT SQL Response**:
 ```sql
-SELECT d.name AS dog_name, z.city
-FROM dog d
-JOIN award a ON d.dog_id = a.dog_id
-JOIN person_dog pd ON d.dog_id = pd.dog_id
-JOIN person p ON pd.person_id = p.person_id
-JOIN address ad ON p.person_id = ad.person_id
-JOIN zip z ON ad.zip = z.zip;
+SELECT 
+    s.SongID, 
+    s.Title, 
+    COUNT(ps.PlaylistID) AS PlaylistCount
+FROM 
+    Song s
+JOIN 
+    PlaylistSong ps ON s.SongID = ps.SongID
+GROUP BY 
+    s.SongID, s.Title
+ORDER BY 
+    PlaylistCount DESC
+LIMIT 1;
 ```
 
-**Friendly Response**: The award-winning dogs are Buddy from New York and Bella from Washington.
+**Friendly Response**: The song "That's What I Like" appears in the greatest number of playlists, totaling 9 appearances..
 
 
 
@@ -31,37 +37,31 @@ It did the SQL part almost right, but didn't quite get the data back in a friend
 
 
 
-Question: Will we have a problem texting any of the previous award winners?
+Question: Which playlists contain only songs from a single genre?
 
 **GPT SQL Response**:
 ```sql
-SELECT DISTINCT phone.person_id, phone.can_recieve_sms
-FROM award
-JOIN dog ON award.dog_id = dog.dog_id
-JOIN person_dog ON dog.dog_id = person_dog.dog_id
-JOIN phone ON person_dog.person_id = phone.person_id
-WHERE phone.can_recieve_sms = 0;
+SELECT 
+    p.PlaylistID, 
+    p.Title
+FROM 
+    Playlist p
+JOIN 
+    PlaylistSong ps ON p.PlaylistID = ps.PlaylistID
+JOIN 
+    Song s ON ps.SongID = s.SongID
+GROUP BY 
+    p.PlaylistID, p.Title
+HAVING 
+    COUNT(DISTINCT s.Genre) = 1;
 ```
 
-SQL Result is just "IDs": [(2, 0)]
+SQL Result is just "IDs": []
 
-**Friendly response**: Yes, we might encounter problems texting previous award winners due to potential privacy or contact restrictions.
+**Friendly response**: I'm sorry, but I can't determine which playlists contain only songs from a single genre based on the information provided.
 
-The generic response really didn't have anything to do with my data. I would have preferred it to say something like, "we can't text Bob Jones, whose dog previously won such-a-such award".
-
-I think I could probably get the answer I'm looking for with a different prompting strategy. I used zero_shot and will try this question again with single domain but gave it an example question answer from a previous question that it succeeded on with asking who didn't have texting capapbility.
-
-## Multi-shot
-It successfully added the "name", however it ironically inverted the logic! "Bob Jones" was the only one who had a winning dog and didn't have an SMS capable phone in the system.
-
-**Question (multi-shot)**: Will we have a problem texting any of the previous award winners?
-
-SQL Result is just "IDs": [(2, 'Bob Jones')]
-
-**Friendly response**: No problem, you won't have issues texting Bob Jones.
-
-The multi-shot prompt made it worse for this question. In both cases (single and multi) though it did seem to be querying the correct data, it just didn't interpret the results correctly.
+I'm not exactly sure what is wrong with this SQL statement, but I specifically made sure one of my playlists only contained "pop" music, so sufficient information was certainly provided. Seems like a simple query, but my multi-shot-trained agent messed up.
 
 
 ## Conclusion
-My findings is that for fairly simple joins chatgpt 4 preview does well at creating SQL queries. This could be useful for data engineers. Actually having a chat interface for non-engineers has issues and could give completely inaccurate answers.
+I found that multi-shot training provided more complex queries and joins than zero-shot did. This increased complexity (and, perhaps, computing confidence?) did not result in more accurate queries being created, however, as each learning technique yielded similar accuracy in their responses.
